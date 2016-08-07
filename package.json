@@ -1,0 +1,14 @@
+{
+  "name": "tic-tac-toe",
+  "version": "0.1.0",
+  "description": "Web tic-tac-toe project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.13.2"
+  }
+}
