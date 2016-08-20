@@ -1,4 +1,8 @@
 module.exports = {
     "extends": "google",
-    "installedESLint": true
+    "installedESLint": true,
+    "rules": {
+      "eqeqeq": "off",
+      "no-eq-null": "off"
+    }
 };
