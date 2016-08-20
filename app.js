@@ -108,38 +108,89 @@ class Board {
     }
     this._boxes = boxes;
   }
+  
+  get box(x, y){
+    return this._boxes[x][y];
+  }
 }
 
 class Judge {
   // updates the victor status
   update(box) {
+    if (!(box instanceof Box)) {
+      throw new Error("Argument must be a box.");
+    }
     if (!this.victor) { // if victor is undefined means there is no victor yet
       if (box.isOnDownwardDiagonal()) {
       }
       if (box.isOnUpwardDiagonal()) {
       }
-      if (box.x === 1) {
-      } else if (box.x === 2) {
-      } else if (box.x === 3) {
-      }
-      if (box.x === 1) {
-      } else if (box.x === 2) {
-      } else if (box.x === 3) {
-      }
+      _checkColumn(box.x());
+      _checkRow(box.y());
     }
   }
-  
+  _checkRow(row) {
+    let b = this._game.board;
+    if (
+        b.box(1, row).state() === b.box(2, row).state()
+        && b.box(1, row).state() === b.box(3,row).state()
+    ) {
+      this._victor = this._game.playerByBoxValue(b.box(1, row).state());
+      notifyVictorChanged();
+    }
+  }
+  _checkColumn(col) {
+    let b = this._game.board;
+    if (
+        b.box(col, 1).state() === b.box(col, 2).state()
+        && b.box(col, 1).state() === b.box(col,3).state()
+    ) {
+      this._victor = this._game.playerByBoxValue(b.box(col, 1).state());
+      notifyVictorChanged();
+    }
+  }
   get victor() {
     return this._victor;
   }
-  
-  constructor(board) {
-    if (!(board instanceof Board)){
-      throw new Error("board must be a Board object");
+  subscribeVictorChanged(cb) {
+    if (typeof cb !== "function") {
+      throw new Error("cb must be a Function object");
     }
-    this._board = board;
+    this._victorChangedSubscribers.push(cb);
+  }
+  unsubscribeVictorChanged(cb) {
+    let array = this._victorChangedSubscribers;
+    for (var i = array.length-1; i >= 0; i--) {
+      if (array[i] === search_term) {
+          array.splice(i, 1);
+      }
+    }
+    this._victorChangedSubscribers = array;
+  }
+  notifyVictorChanged(cb){
+    this._victorChangedSubscribers.forEach(cb => {
+      cb(this);
+    }
+  }
+  
+  constructor(game) {
+    if (!(game instanceof Game)) {
+      throw new Error("game must be a Game object");
+    }
+    this._game = game;
     this._victor = undefined;
     
+  }
+}
+
+class Player {
+  constructor() {
+  }
+  set boxValue(boxValue) {
+    this._boxValue = boxValue;
+  }
+  get boxValue(boxValue) {
+    return this._boxValue;
   }
 }
 
@@ -147,6 +198,7 @@ class Game {
   constructor() {
     this._board = new Board();
     this._judge = new Judge(this._board);
+    this._players = [new Player(1), new Player(2)];
   }
   get board() {
     return this._board;
@@ -159,5 +211,17 @@ class Game {
   }
   set judge(judge) {
     this._judge = judge;
+  }
+  get playerByID(id){
+    return this._player[id];
+  }
+  get playerByBoxValue(boxValue){
+    let p = undefined;
+    this._players.forEach((el, i) => {
+      if (this._player[i].boxValue === boxValue) {
+          p = this._player[i];
+      }
+    });
+    return p;
   }
 }
