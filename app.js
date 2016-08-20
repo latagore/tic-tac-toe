@@ -109,7 +109,7 @@ class Board {
     this._boxes = boxes;
   }
   
-  get box(x, y){
+  getBoxByPosition(x, y){
     return this._boxes[x][y];
   }
 }
@@ -167,10 +167,10 @@ class Judge {
     }
     this._victorChangedSubscribers = array;
   }
-  notifyVictorChanged(cb){
+  notifyVictorChanged(cb) {
     this._victorChangedSubscribers.forEach(cb => {
       cb(this);
-    }
+    });
   }
   
   constructor(game) {
@@ -189,7 +189,7 @@ class Player {
   set boxValue(boxValue) {
     this._boxValue = boxValue;
   }
-  get boxValue(boxValue) {
+  get boxValue() {
     return this._boxValue;
   }
 }
@@ -212,10 +212,10 @@ class Game {
   set judge(judge) {
     this._judge = judge;
   }
-  get playerByID(id){
+  getPlayerByID(id){
     return this._player[id];
   }
-  get playerByBoxValue(boxValue){
+  getPlayerByBoxValue(boxValue){
     let p = undefined;
     this._players.forEach((el, i) => {
       if (this._player[i].boxValue === boxValue) {
