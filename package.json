@@ -4,7 +4,7 @@
   "description": "Web tic-tac-toe project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --reporter spec --compilers js:babel-core/register",
     "babel": "babel",
     "eslint": "eslint"
   },
@@ -12,6 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "babel-cli": "^6.11.4",
+    "babel-core": "^6.13.2",
     "babel-preset-es2015": "^6.13.2",
     "chai": "^3.5.0",
     "eslint": "^3.2.2",
