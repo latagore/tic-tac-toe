@@ -1,8 +1,9 @@
+
 class Box {
   constructor(x, y) {
     this._x = x;
     this._y = y;
-    this._state = EmptyBoxState.instance();
+    this._state = new EmptyBoxState(this);
   }
   get x() {
     return this._x;
@@ -25,7 +26,7 @@ class Box {
   fillX() {
     this._state.fillX();
   }
-  fill0() {
+  fillO() {
     this._state.fillO();
   }
 }
@@ -40,17 +41,11 @@ class EmptyBoxState extends BoxState {
     }
     this._box = box;
   }
-  static instance() {
-    if (this._inst == null) {
-      this._inst = new EmptyBoxState();
-    }
-    return this._inst;
-  }
   fillX() {
-    this._box.state(XBoxState.instance());
+    this._box.state = new XBoxState(this._box);
   }
-  fill0() {
-    this._box.state(OBoxState.instance());
+  fillO() {
+    this._box.state = new OBoxState(this._box);
   }
 }
 class XBoxState extends BoxState {
@@ -61,16 +56,10 @@ class XBoxState extends BoxState {
     }
     this._box = box;
   }
-  static instance() {
-    if (this._inst == null) {
-      this._inst = new XBoxState();
-    }
-    return this._inst;
-  }
   fillX() {
     throw new Error("Box already filled");
   }
-  fill0() {
+  fillO() {
     throw new Error("Box already filled");
   }
 }
@@ -82,16 +71,10 @@ class OBoxState extends BoxState {
     }
     this._box = box;
   }
-  static instance() {
-    if (this._inst == null) {
-      this._inst = new OBoxState();
-    }
-    return this._inst;
-  }
   fillX() {
     throw new Error("Box already filled");
   }
-  fill0() {
+  fillO() {
     throw new Error("Box already filled");
   }
 }
@@ -224,4 +207,16 @@ class Game {
     });
     return p;
   }
+}
+
+
+module.exports = {
+  Box,
+  EmptyBoxState,
+  XBoxState,
+  OBoxState,
+  Board,
+  Judge,
+  Player,
+  Game
 }
