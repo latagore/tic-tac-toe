@@ -110,7 +110,7 @@ describe("Tic Tac Toe", function() {
       board.box(3,3).fillO();
       expect(victor).to.not.be.defined;
     });
-    it.only("should notify when there is a row that wins", function() {
+    it("should notify when there is a row that wins", function() {
       // set up board using (where B is blank): 
       // XXX
       // BBB
