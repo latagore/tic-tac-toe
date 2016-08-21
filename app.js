@@ -251,7 +251,8 @@ class Game {
   constructor() {
     this._board = new Board();
     this._judge = new Judge(this);
-    this._players = [new Player(1), new Player(2)];
+    // skip 0 because players are 1-based rather than 0-based
+    this._players = [,new Player(1), new Player(2)];
   }
   get board() {
     return this._board;
@@ -266,7 +267,7 @@ class Game {
     this._judge = judge;
   }
   getPlayerByID(id){
-    return this._player[id];
+    return this._players[id];
   }
   getPlayerByBoxValue(boxValue){
     let p = undefined;
