@@ -110,5 +110,32 @@ describe("Tic Tac Toe", function() {
       board.box(3,3).fillO();
       expect(victor).to.not.be.defined;
     });
+    it.only("should notify when there is a row that wins", function() {
+      // set up board using (where B is blank): 
+      // XXX
+      // BBB
+      // BBB
+      var game = new app.Game();
+      // FIXME really weird that I have to create a new state + box
+      game.getPlayerByID(1).boxValue = new app.XBoxState(new app.Box(1,1));
+      game.getPlayerByID(2).boxValue = new app.OBoxState(new app.Box(1,1));
+      var board = game.board;
+      var judge = game.judge;
+      var victor = undefined;
+      var testFunction = function(judge) {
+        victor = judge.victor;
+      };
+      judge.subscribeVictorChanged(testFunction);
+      // repeatedly check there is no winner after each transition
+      expect(victor).to.not.be.defined;
+      
+      board.box(1,1).fillX();
+      expect(victor).to.not.be.defined;
+      board.box(1,2).fillX();
+      expect(victor).to.not.be.defined;
+      board.box(1,3).fillX();
+      debugger;
+      expect(victor).to.equal(game.getPlayerByID(1));
+    });
   });
 });
