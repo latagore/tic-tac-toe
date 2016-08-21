@@ -40,17 +40,17 @@ describe("Tic Tac Toe", function() {
       
       // explicitly list all 3x3 grid positions
       // because a for loop isn't much simpler
-      expect(board.getBoxByPosition(1,1)).to.be.an.instanceof(app.Box);
-      expect(board.getBoxByPosition(1,2)).to.be.an.instanceof(app.Box);
-      expect(board.getBoxByPosition(1,3)).to.be.an.instanceof(app.Box);
+      expect(board.box(1,1)).to.be.an.instanceof(app.Box);
+      expect(board.box(1,2)).to.be.an.instanceof(app.Box);
+      expect(board.box(1,3)).to.be.an.instanceof(app.Box);
       
-      expect(board.getBoxByPosition(2,1)).to.be.an.instanceof(app.Box);
-      expect(board.getBoxByPosition(2,2)).to.be.an.instanceof(app.Box);
-      expect(board.getBoxByPosition(2,3)).to.be.an.instanceof(app.Box);
+      expect(board.box(2,1)).to.be.an.instanceof(app.Box);
+      expect(board.box(2,2)).to.be.an.instanceof(app.Box);
+      expect(board.box(2,3)).to.be.an.instanceof(app.Box);
       
-      expect(board.getBoxByPosition(3,1)).to.be.an.instanceof(app.Box);
-      expect(board.getBoxByPosition(3,2)).to.be.an.instanceof(app.Box);
-      expect(board.getBoxByPosition(3,3)).to.be.an.instanceof(app.Box);
+      expect(board.box(3,1)).to.be.an.instanceof(app.Box);
+      expect(board.box(3,2)).to.be.an.instanceof(app.Box);
+      expect(board.box(3,3)).to.be.an.instanceof(app.Box);
     });
   });
   
@@ -73,25 +73,25 @@ describe("Tic Tac Toe", function() {
       // repeatedly check there is no winner after each transition
       expect(victor).to.not.be.defined;
       
-      board.getBoxByPosition(1,1).fillX();
+      board.box(1,1).fillX();
       expect(victor).to.not.be.defined;
-      board.getBoxByPosition(1,2).fillO();
+      board.box(1,2).fillO();
       expect(victor).to.not.be.defined;
-      board.getBoxByPosition(1,3).fillX();
-      expect(victor).to.not.be.defined;
-      
-      board.getBoxByPosition(2,1).fillO();
-      expect(victor).to.not.be.defined;
-      board.getBoxByPosition(2,2).fillO();
-      expect(victor).to.not.be.defined;
-      board.getBoxByPosition(2,3).fillX();
+      board.box(1,3).fillX();
       expect(victor).to.not.be.defined;
       
-      board.getBoxByPosition(2,1).fillX();
+      board.box(2,1).fillO();
       expect(victor).to.not.be.defined;
-      board.getBoxByPosition(2,1).fillX();
+      board.box(2,2).fillO();
       expect(victor).to.not.be.defined;
-      board.getBoxByPosition(2,1).fillO();
+      board.box(2,3).fillX();
+      expect(victor).to.not.be.defined;
+      
+      board.box(3,1).fillX();
+      expect(victor).to.not.be.defined;
+      board.box(3,2).fillX();
+      expect(victor).to.not.be.defined;
+      board.box(3,3).fillO();
       expect(victor).to.not.be.defined;
     });
   });

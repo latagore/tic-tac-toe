@@ -4,6 +4,7 @@ class Box {
     this._x = x;
     this._y = y;
     this._state = new EmptyBoxState(this);
+    this._stateChangedSubscribers = [];
   }
   get x() {
     return this._x;
@@ -25,9 +26,39 @@ class Box {
   }
   fillX() {
     this._state.fillX();
+    this.notifyStateChanged();
   }
   fillO() {
     this._state.fillO();
+    this.notifyStateChanged();
+  }
+  // x and y are increasing towards downright
+  // so when x = y, it's on the downward diagonal
+  isOnDownwardDiagonal(){
+    return this.x === this.y;
+  }
+  isOnUpwardDiagonal(){
+    return (4 - this.x) === this.y;
+  }
+  subscribeStateChanged(cb) {
+    if (typeof cb !== "function") {
+      throw new Error("cb must be a Function object");
+    }
+    this._stateChangedSubscribers.push(cb);
+  }
+  unsubscribeStateChanged(cb) {
+    let array = this._stateChangedSubscribers;
+    for (var i = array.length - 1; i >= 0; i--) {
+      if (array[i] === cb) {
+        array.splice(i, 1);
+      }
+    }
+    this._stateChangedSubscribers = array;
+  }
+  notifyStateChanged() {
+    this._stateChangedSubscribers.forEach(cb => {
+      cb(this);
+    });
   }
 }
 
@@ -91,49 +122,86 @@ class Board {
     }
     this._boxes = boxes;
   }
-  
-  getBoxByPosition(x, y){
+
+  box(x, y) {
     return this._boxes[x][y];
   }
 }
 
 class Judge {
+  constructor(game) {
+    if (!(game instanceof Game)) {
+      throw new Error("game must be a Game object");
+    }
+    this._game = game;
+    this._victor = undefined;
+    this._victorChangedSubscribers = [];
+    for (var i = 1; i <= 3; i++) {
+      for (var j = 1; j <= 3; j++) {
+        this._game.board.box(i, j)
+            .subscribeStateChanged(this.update.bind(this));
+      }
+    }
+  }
+  get victor() {
+    return this._victor;
+  }
   // updates the victor status
   update(box) {
     if (!(box instanceof Box)) {
       throw new Error("Argument must be a box.");
     }
-    if (!this.victor) { // if victor is undefined means there is no victor yet
+    if (!(this.victor)) { // if victor is undefined means there is no victor yet
       if (box.isOnDownwardDiagonal()) {
+        this._checkDownwardDiagonal();
       }
       if (box.isOnUpwardDiagonal()) {
+        this._checkUpwardDiagonal();
       }
-      _checkColumn(box.x());
-      _checkRow(box.y());
+      this._checkColumn(box.x);
+      this._checkRow(box.y);
     }
   }
   _checkRow(row) {
     let b = this._game.board;
     if (
-        b.box(1, row).state() === b.box(2, row).state()
-        && b.box(1, row).state() === b.box(3,row).state()
+        b.box(1, row).state === b.box(2, row).state
+        && b.box(1, row).state === b.box(3,row).state
     ) {
-      this._victor = this._game.playerByBoxValue(b.box(1, row).state());
+      this._victor = this._game.playerByBoxValue(b.box(1, row).state);
       notifyVictorChanged();
     }
   }
   _checkColumn(col) {
     let b = this._game.board;
     if (
-        b.box(col, 1).state() === b.box(col, 2).state()
-        && b.box(col, 1).state() === b.box(col,3).state()
+        b.box(col, 1).state === b.box(col, 2).state
+        && b.box(col, 1).state === b.box(col,3).state
     ) {
-      this._victor = this._game.playerByBoxValue(b.box(col, 1).state());
+      this._victor = this._game.playerByBoxValue(b.box(col, 1).state);
       notifyVictorChanged();
     }
   }
-  get victor() {
-    return this._victor;
+  _checkDownwardDiagonal() {
+    debugger;
+    let b = this._game.board;
+    if (
+        b.box(1, 1).state === b.box(2, 2).state
+        && b.box(1, 1).state === b.box(3,3).state
+    ) {
+      this._victor = this._game.playerByBoxValue(b.box(1, 1).state);
+      notifyVictorChanged();
+    }
+  }
+  _checkUpwardDiagonal() {
+    let b = this._game.board;
+    if (
+        b.box(3, 1).state === b.box(2, 2).state
+        && b.box(3, 1).state === b.box(3,1).state
+    ) {
+      this._victor = this._game.playerByBoxValue(b.box(3, 1).state);
+      notifyVictorChanged();
+    }
   }
   subscribeVictorChanged(cb) {
     if (typeof cb !== "function") {
@@ -150,19 +218,10 @@ class Judge {
     }
     this._victorChangedSubscribers = array;
   }
-  notifyVictorChanged(cb) {
+  notifyVictorChanged() {
     this._victorChangedSubscribers.forEach(cb => {
       cb(this);
     });
-  }
-  
-  constructor(game) {
-    if (!(game instanceof Game)) {
-      throw new Error("game must be a Game object");
-    }
-    this._game = game;
-    this._victor = undefined;
-    
   }
 }
 
@@ -180,7 +239,7 @@ class Player {
 class Game {
   constructor() {
     this._board = new Board();
-    this._judge = new Judge(this._board);
+    this._judge = new Judge(this);
     this._players = [new Player(1), new Player(2)];
   }
   get board() {
