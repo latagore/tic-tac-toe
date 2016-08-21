@@ -136,5 +136,85 @@ describe("Tic Tac Toe", function() {
       board.box(1,3).fillX();
       expect(victor).to.equal(game.getPlayerByID(1));
     });
+    
+    it("should notify when there is a column that wins", function() {
+      // set up board using (where B is blank): 
+      // BXB
+      // BXB
+      // BXB
+      var game = new app.Game();
+      // FIXME really weird that I have to create a new state + box
+      game.getPlayerByID(1).boxValue = new app.XBoxState(new app.Box(1,1));
+      game.getPlayerByID(2).boxValue = new app.OBoxState(new app.Box(1,1));
+      var board = game.board;
+      var judge = game.judge;
+      var victor = undefined;
+      var testFunction = function(judge) {
+        victor = judge.victor;
+      };
+      judge.subscribeVictorChanged(testFunction);
+      // repeatedly check there is no winner after each transition
+      expect(victor).to.not.be.defined;
+      
+      board.box(1,2).fillX();
+      expect(victor).to.not.be.defined;
+      board.box(2,2).fillX();
+      expect(victor).to.not.be.defined;
+      board.box(3,2).fillX();
+      expect(victor).to.equal(game.getPlayerByID(1));
+    });
+    
+    it("should notify when there is a downward diagonal that wins", function() {
+      // set up board using (where B is blank): 
+      // XBB
+      // BXB
+      // BBX
+      var game = new app.Game();
+      // FIXME really weird that I have to create a new state + box
+      game.getPlayerByID(1).boxValue = new app.XBoxState(new app.Box(1,1));
+      game.getPlayerByID(2).boxValue = new app.OBoxState(new app.Box(1,1));
+      var board = game.board;
+      var judge = game.judge;
+      var victor = undefined;
+      var testFunction = function(judge) {
+        victor = judge.victor;
+      };
+      judge.subscribeVictorChanged(testFunction);
+      // repeatedly check there is no winner after each transition
+      expect(victor).to.not.be.defined;
+      
+      board.box(1,1).fillO();
+      expect(victor).to.not.be.defined;
+      board.box(2,2).fillO();
+      expect(victor).to.not.be.defined;
+      board.box(3,3).fillO();
+      expect(victor).to.equal(game.getPlayerByID(2));
+    });
+    it("should notify when there is a upward diagonal that wins", function() {
+      // set up board using (where B is blank): 
+      // BBX
+      // BXB
+      // XBB
+      var game = new app.Game();
+      // FIXME really weird that I have to create a new state + box
+      game.getPlayerByID(1).boxValue = new app.XBoxState(new app.Box(1,1));
+      game.getPlayerByID(2).boxValue = new app.OBoxState(new app.Box(1,1));
+      var board = game.board;
+      var judge = game.judge;
+      var victor = undefined;
+      var testFunction = function(judge) {
+        victor = judge.victor;
+      };
+      judge.subscribeVictorChanged(testFunction);
+      // repeatedly check there is no winner after each transition
+      expect(victor).to.not.be.defined;
+      
+      board.box(3,1).fillO();
+      expect(victor).to.not.be.defined;
+      board.box(2,2).fillO();
+      expect(victor).to.not.be.defined;
+      board.box(1,3).fillO();
+      expect(victor).to.equal(game.getPlayerByID(2));
+    });
   });
 });
