@@ -32,6 +32,22 @@ describe("Tic Tac Toe", function() {
       expect(box.fillO).to.throw(Error);
       expect(box.state).to.be.an.instanceof(app.OBoxState);
     });
+    
+    it("should show diagonal status when on diagonal", function () {
+      var box = new app.Box(3, 3);
+      expect(box.isOnDownwardDiagonal()).is.true;
+      
+      box = new app.Box(2, 2);
+      expect(box.isOnUpwardDiagonal()).is.true;
+    });
+    
+    it("should show not-diagonal status when not on diagonal", function () {
+      var box = new app.Box(3, 1);
+      expect(box.isOnDownwardDiagonal()).is.false;
+      
+      box = new app.Box(2, 1);
+      expect(box.isOnUpwardDiagonal()).is.false;
+    });
   });
   
   describe("Boards", function() {
