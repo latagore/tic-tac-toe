@@ -164,43 +164,54 @@ class Judge {
   }
   _checkRow(row) {
     let b = this._game.board;
+    let proto1 = Object.getPrototypeOf(b.box(1, row).state);
+    let proto2 = Object.getPrototypeOf(b.box(2, row).state);
+    let proto3 = Object.getPrototypeOf(b.box(3, row).state);
     if (
-        b.box(1, row).state === b.box(2, row).state
-        && b.box(1, row).state === b.box(3,row).state
+        proto1 === proto2
+        && proto1 === proto3
     ) {
-      this._victor = this._game.playerByBoxValue(b.box(1, row).state);
-      notifyVictorChanged();
+      this._victor = this._game.getPlayerByBoxValue(b.box(1, row).state);
+      this.notifyVictorChanged();
     }
   }
   _checkColumn(col) {
     let b = this._game.board;
+    let proto1 = Object.getPrototypeOf(b.box(col, 1).state);
+    let proto2 = Object.getPrototypeOf(b.box(col, 2).state);
+    let proto3 = Object.getPrototypeOf(b.box(col, 3).state);
     if (
-        b.box(col, 1).state === b.box(col, 2).state
-        && b.box(col, 1).state === b.box(col,3).state
+        proto1 === proto2
+        && proto1 === proto3
     ) {
-      this._victor = this._game.playerByBoxValue(b.box(col, 1).state);
-      notifyVictorChanged();
+      this._victor = this._game.getPlayerByBoxValue(b.box(col, 1).state);
+      this.notifyVictorChanged();
     }
   }
   _checkDownwardDiagonal() {
-    debugger;
     let b = this._game.board;
+    let proto1 = Object.getPrototypeOf(b.box(1, 1).state);
+    let proto2 = Object.getPrototypeOf(b.box(2, 2).state);
+    let proto3 = Object.getPrototypeOf(b.box(3, 3).state);
     if (
-        b.box(1, 1).state === b.box(2, 2).state
-        && b.box(1, 1).state === b.box(3,3).state
+        proto1 === proto2
+        && proto1 === proto3
     ) {
-      this._victor = this._game.playerByBoxValue(b.box(1, 1).state);
-      notifyVictorChanged();
+      this._victor = this._game.getPlayerByBoxValue(b.box(1, 1).state);
+      this.notifyVictorChanged();
     }
   }
   _checkUpwardDiagonal() {
     let b = this._game.board;
+    let proto1 = Object.getPrototypeOf(b.box(3, 1).state);
+    let proto2 = Object.getPrototypeOf(b.box(2, 2).state);
+    let proto3 = Object.getPrototypeOf(b.box(1, 3).state);
     if (
-        b.box(3, 1).state === b.box(2, 2).state
-        && b.box(3, 1).state === b.box(3,1).state
+        proto1 === proto2
+        && proto1 === proto3
     ) {
-      this._victor = this._game.playerByBoxValue(b.box(3, 1).state);
-      notifyVictorChanged();
+      this._victor = this._game.getPlayerByBoxValue(b.box(3, 1).state);
+      this.notifyVictorChanged();
     }
   }
   subscribeVictorChanged(cb) {
@@ -260,8 +271,11 @@ class Game {
   getPlayerByBoxValue(boxValue){
     let p = undefined;
     this._players.forEach((el, i) => {
-      if (this._player[i].boxValue === boxValue) {
-          p = this._player[i];
+      if (
+        Object.getPrototypeOf(this._players[i].boxValue)
+        === Object.getPrototypeOf(boxValue)
+      ) {
+        p = this._players[i];
       }
     });
     return p;
