@@ -134,7 +134,6 @@ describe("Tic Tac Toe", function() {
       board.box(1,2).fillX();
       expect(victor).to.not.be.defined;
       board.box(1,3).fillX();
-      debugger;
       expect(victor).to.equal(game.getPlayerByID(1));
     });
   });
