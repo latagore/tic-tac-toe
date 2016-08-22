@@ -283,6 +283,96 @@ class Game {
   }
 }
 
+class AI {
+  // generateSequence()
+}
+class RandomAI extends AI {
+  constructor(board, player){
+    super();
+    if (!(board instanceof Board)) {
+      throw new TypeError("board must be a Board");
+    }
+    if (!(player instanceof Player)) {
+      throw new TypeError("player must be a Player");
+    }
+    this._board = board;
+    this._player = player;
+  }
+  get board(){
+    return this._board;
+  }
+  set board(board) {
+    this._board = board;
+  }
+  get player(){
+    return this._player;
+  }
+  set player(player){
+    this._player = player;
+  }
+  
+  makeNextMove() {
+    // check that the board isn't completely filled
+    let hasEmpty = false;
+    for (let i = 1; i <= 3; i++) {
+      for (let j = 1; j <= 3; j++) {
+        hasEmpty = hasEmpty || 
+          Object.getPrototypeOf(this._board.box(i, j).state) === EmptyBoxState;
+      }
+    }
+    // no more valid moves to make, so don't do anything
+    if (!hasEmpty){
+      return;
+    }
+    
+    // if no more moves in the stack, regenerate the next moves
+    if (!this._state){
+      this.generate();
+    }
+    // get some index from the permutation
+    let i = this._state.pop();
+    // and convert it into a location on the board
+    let x = i / 3;
+    let y = i % 3;
+    if (Object.getPrototypeOf(this._player.boxValue) === XBoxState) {
+      try {
+        this._board.box(x, y).fillX();
+      } catch (e) {
+        // this box was already filled, so try making the next move
+        makeNextMove();
+      }
+    } else if (Object.getPrototypeOf(this._player.boxValue) === OBoxState) {
+      try {
+        this._board.box(x, y).fillO();
+      } catch (e) {
+        // this box was already filled, so try making the next move
+        makeNextMove();
+      }
+    } else {
+      throw new Error("Unknown player box value");
+    }
+  }
+  
+  _getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+ 
+  generate() {
+    this._state = [];
+    // initialize state
+    for (var i = 0; i < 9; i++) {
+      this._state[i] = i+1;
+    }
+    // shuffle state into a random permutation using
+    // Fisher-Yates shuffle
+    for (var i = 0; i < 9-1; i++) {
+      var swap = this._state[i];
+      var randomIndex = _getRandomInt(i, 8);
+      this._state[i] = this._state[randomIndex];
+      this._state[randomIndex] = swap;
+    }
+  }
+}
 
 module.exports = {
   Box,
@@ -292,5 +382,7 @@ module.exports = {
   Board,
   Judge,
   Player,
-  Game
+  Game,
+  AI,
+  RandomAI
 }
