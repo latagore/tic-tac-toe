@@ -217,4 +217,30 @@ describe("Tic Tac Toe", function() {
       expect(victor).to.equal(game.getPlayerByID(2));
     });
   });
-});
+  
+  describe("Random AIs", function() {
+    it("should be able to fill a board", function() {
+      var board = new app.Board();
+      var player = new app.Player();
+      player.boxValue = new app.XBoxState(new app.Box(1,1));
+      var ai = new app.RandomAI(board, player);
+      for (var i = 0; i < 9; i++){
+        ai.makeNextMove();
+      }
+      
+      // check that the board is completely filled
+      let hasEmpty = false;
+      for (var i = 1; i <= 3; i++) {
+        for (var j = 1; j <= 3; j++) {
+          hasEmpty = hasEmpty || 
+            Object.getPrototypeOf(board.box(i, j).state) === app.EmptyBoxState;
+        }
+      }
+      
+      if (hasEmpty){
+        throw new Error("Part of the board is empty");
+      }
+        
+    });
+  });
+}); 
