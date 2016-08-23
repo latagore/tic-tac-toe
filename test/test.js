@@ -240,7 +240,9 @@ describe("Tic Tac Toe", function() {
       if (hasEmpty){
         throw new Error("Part of the board is empty");
       }
-        
+      
+      // should be able to make the AI try and make another move without errors
+      ai.makeNextMove();
     });
   });
 }); 
