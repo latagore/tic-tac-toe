@@ -244,5 +244,81 @@ describe("Tic Tac Toe", function() {
       // should be able to make the AI try and make another move without errors
       ai.makeNextMove();
     });
+    
+    it("should be able to fill a partially filled board", function() {
+      var board = new app.Board();
+      // fill random boxes
+      board.box(1,1).fillO();
+      board.box(2,1).fillX();
+      board.box(3,1).fillO();
+      
+      var player = new app.Player();
+      player.boxValue = new app.XBoxState(new app.Box(1,1));
+      var ai = new app.RandomAI(board, player);
+      // make 9 moves even though there's only 6 valid moves left
+      for (var i = 0; i < 9; i++){
+        ai.makeNextMove();
+      }
+      
+      // check that the board is completely filled
+      let hasEmpty = false;
+      for (var i = 1; i <= 3; i++) {
+        for (var j = 1; j <= 3; j++) {
+          hasEmpty = hasEmpty ||
+            Object.getPrototypeOf(board.box(i, j).state) === app.EmptyBoxState;
+        }
+      }
+      
+      if (hasEmpty){
+        throw new Error("Part of the board is empty");
+      }
+    });
+    
+    it("should be able to be reused across boards", function() {
+      var board1 = new app.Board();
+      // fill left column of the board
+      board1.box(1,1).fillX();
+      board1.box(1,2).fillO();
+      board1.box(1,3).fillX();
+      
+      var player = new app.Player();
+      player.boxValue = new app.XBoxState(new app.Box(1,1));
+      var ai = new app.RandomAI(board1, player);
+      // make 9 moves even though there's only 6 valid moves left
+      for (var i = 0; i < 9; i++){
+        ai.makeNextMove();
+      }
+      // make sure the AI filled in the blank parts of the board
+      var hasEmpty = false;
+      for (var i = 2; i <= 3; i++) {
+        for (var j = 1; j <= 3; j++) {
+          hasEmpty = hasEmpty ||
+            Object.getPrototypeOf(board1.box(i, j).state) === app.EmptyBoxState;
+        }
+      }
+      if (hasEmpty){
+        throw new Error("Part of the board was not filled correctly");
+      }
+      
+      // create second board
+      var board2 = new app.Board();
+      ai.board = board2;
+      // make sure the AI can fill the entire board
+      for (var i = 0; i < 9; i++){
+        ai.makeNextMove();
+      }
+      // check that the board is completely filled
+      hasEmpty = false;
+      for (var i = 1; i <= 3; i++) {
+        for (var j = 1; j <= 3; j++) {
+          hasEmpty = hasEmpty ||
+            Object.getPrototypeOf(board2.box(i, j).state) === app.EmptyBoxState;
+        }
+      }
+      
+      if (hasEmpty){
+        throw new Error("Part of the board is empty");
+      }
+    });
   });
 }); 
