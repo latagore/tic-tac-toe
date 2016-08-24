@@ -237,7 +237,8 @@ class Judge {
 }
 
 class Player {
-  constructor() {
+  constructor(game) {
+    this._game = game;
   }
   
   chooseBox(x, y){
@@ -245,12 +246,26 @@ class Player {
       throw new TypeError("x and y must be a number");
     }
     
+    // checks that the move is valid
+    this._validateMove(x, y);
+          
     if (Object.getPrototypeOf(this._boxValue) === XBoxState) {
       this._board.box(x, y).fillX();
     } else if (Object.getPrototypeOf(this._boxValue) === OBoxState) {
       this._board.box(x, y).fillO();
     } else {
       throw new Error("Unknown player box value");
+    }
+    this._game.nextTurn();
+  }
+  
+  // throws Errors if move isn't valid
+  _validateMove(x, y){
+    if (this._game.getActivePlayer() !== this){
+      throw new Error("Not active player");
+    }
+    if (Object.getPrototypeOf(this._game._board.box(x, y).state) !== EmptyBoxState){
+      throw new Error("Box already filled");
     }
   }
   
@@ -260,6 +275,12 @@ class Player {
   get boxValue() {
     return this._boxValue;
   }
+  set game(game) {
+    this._game = game;
+  }
+  get game() {
+    return this._game;
+  }
 }
 
 class Game {
@@ -268,6 +289,7 @@ class Game {
     this._judge = new Judge(this);
     // skip 0 because players are 1-based rather than 0-based
     this._players = [,new Player(1), new Player(2)];
+    this._currentPlayer = this._players[1];
   }
   get board() {
     return this._board;
@@ -295,6 +317,25 @@ class Game {
       }
     });
     return p;
+  }
+  get currentPlayer() {
+    return this._currentPlayer;
+  }
+  set currentPlayer(playerID){
+    if (playerID !== 1 && playerID !== 2) {
+      throw new Error("PlayerID must be 1 or 2");
+    }
+    this._currentPlayer = players[playerID];
+  }
+  
+  nextTurn() {
+    if (this._currentPlayer === this._players[1]) {
+      this._currentPlayer = this._players[2];
+    } else if (this._currentPlayer === this._players[2]) {
+      this._currentPlayer = this._players[1];
+    } else {
+      throw new Error("No current player");
+    }
   }
 }
 
