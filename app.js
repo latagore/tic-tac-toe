@@ -239,6 +239,21 @@ class Judge {
 class Player {
   constructor() {
   }
+  
+  chooseBox(x, y){
+    if ((typeof x !== "number") || (typeof y !== "number")) {
+      throw new TypeError("x and y must be a number");
+    }
+    
+    if (Object.getPrototypeOf(this._boxValue) === XBoxState) {
+      this._board.box(x, y).fillX();
+    } else if (Object.getPrototypeOf(this._boxValue) === OBoxState) {
+      this._board.box(x, y).fillO();
+    } else {
+      throw new Error("Unknown player box value");
+    }
+  }
+  
   set boxValue(boxValue) {
     this._boxValue = boxValue;
   }
@@ -334,22 +349,16 @@ class RandomAI extends AI {
     // and convert it into a location on the board
     let x = i / 3;
     let y = i % 3;
-    if (Object.getPrototypeOf(this._player.boxValue) === XBoxState) {
-      try {
-        this._board.box(x, y).fillX();
-      } catch (e) {
+    
+    try {
+      this._player.chooseBox(x, y);
+    } catch (e) {
+      if (e.message === "Box already filled") {
         // this box was already filled, so try making the next move
         makeNextMove();
+      } else {
+        throw e;
       }
-    } else if (Object.getPrototypeOf(this._player.boxValue) === OBoxState) {
-      try {
-        this._board.box(x, y).fillO();
-      } catch (e) {
-        // this box was already filled, so try making the next move
-        makeNextMove();
-      }
-    } else {
-      throw new Error("Unknown player box value");
     }
   }
   
