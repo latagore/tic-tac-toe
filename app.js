@@ -246,8 +246,8 @@ class Player {
       throw new TypeError("x and y must be a number");
     }
     
-    // checks that the move is valid
-    this._validateMove(x, y);
+    // checks whether this player is the active one
+    this._checkTurn();
           
     if (Object.getPrototypeOf(this._boxValue) === XBoxState) {
       this._board.box(x, y).fillX();
@@ -259,13 +259,10 @@ class Player {
     this._game.nextTurn();
   }
   
-  // throws Errors if move isn't valid
-  _validateMove(x, y){
+  // throws Error if it's not this players turn
+  _checkTurn(x, y){
     if (this._game.getActivePlayer() !== this){
       throw new Error("Not active player");
-    }
-    if (Object.getPrototypeOf(this._game._board.box(x, y).state) !== EmptyBoxState){
-      throw new Error("Box already filled");
     }
   }
   
