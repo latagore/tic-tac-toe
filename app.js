@@ -137,9 +137,8 @@ class Judge {
     this._victor = undefined;
     this._victorChangedSubscribers = [];
     this._board = undefined;
-    
   }
-  watch(board){
+  watch(board) {
     if (this._board != null) {
       throw new Error("Already watching a board");
     }
@@ -158,9 +157,9 @@ class Judge {
             .unsubscribeStateChanged(this.update.bind(this));
       }
     }
-    this._board = board;
+    this._board = undefined;
   }
-  
+
   get victor() {
     return this._victor;
   }
