@@ -136,6 +136,14 @@ class Judge {
     this._game = game;
     this._victor = undefined;
     this._victorChangedSubscribers = [];
+    this._board = undefined;
+    
+  }
+  watch(board){
+    if (this._board != null) {
+      throw new Error("Already watching a board");
+    }
+    this._board = board;
     for (var i = 1; i <= 3; i++) {
       for (var j = 1; j <= 3; j++) {
         this._game.board.box(i, j)
@@ -143,6 +151,16 @@ class Judge {
       }
     }
   }
+  unwatchBoard() {
+    for (var i = 1; i <= 3; i++) {
+      for (var j = 1; j <= 3; j++) {
+        this._game.board.box(i, j)
+            .unsubscribeStateChanged(this.update.bind(this));
+      }
+    }
+    this._board = board;
+  }
+  
   get victor() {
     return this._victor;
   }
@@ -163,7 +181,7 @@ class Judge {
     }
   }
   _checkRow(row) {
-    let b = this._game.board;
+    let b = this._board;
     let proto1 = Object.getPrototypeOf(b.box(1, row).state);
     let proto2 = Object.getPrototypeOf(b.box(2, row).state);
     let proto3 = Object.getPrototypeOf(b.box(3, row).state);
@@ -176,7 +194,7 @@ class Judge {
     }
   }
   _checkColumn(col) {
-    let b = this._game.board;
+    let b = this._board;
     let proto1 = Object.getPrototypeOf(b.box(col, 1).state);
     let proto2 = Object.getPrototypeOf(b.box(col, 2).state);
     let proto3 = Object.getPrototypeOf(b.box(col, 3).state);
@@ -189,7 +207,7 @@ class Judge {
     }
   }
   _checkDownwardDiagonal() {
-    let b = this._game.board;
+    let b = this._board;
     let proto1 = Object.getPrototypeOf(b.box(1, 1).state);
     let proto2 = Object.getPrototypeOf(b.box(2, 2).state);
     let proto3 = Object.getPrototypeOf(b.box(3, 3).state);
@@ -202,7 +220,7 @@ class Judge {
     }
   }
   _checkUpwardDiagonal() {
-    let b = this._game.board;
+    let b = this._board;
     let proto1 = Object.getPrototypeOf(b.box(3, 1).state);
     let proto2 = Object.getPrototypeOf(b.box(2, 2).state);
     let proto3 = Object.getPrototypeOf(b.box(1, 3).state);
@@ -330,6 +348,7 @@ class Game {
   constructor() {
     this._board = new Board();
     this._judge = new Judge(this);
+    this._judge.watch(this._board);
     // skip 0 because players are 1-based rather than 0-based
     this._players = [new Player(this._board),
         new Player(this._board)];
