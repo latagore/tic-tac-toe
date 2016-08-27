@@ -431,7 +431,7 @@ class RandomAI extends AI {
     } catch (e) {
       if (e.message === "Box already filled") {
         // this box was already filled, so try making the next move
-        makeNextMove();
+        this.makeNextMove();
       } else {
         throw e;
       }
