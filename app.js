@@ -296,7 +296,7 @@ class Game {
     this._board = new Board();
     this._judge = new Judge(this);
     // skip 0 because players are 1-based rather than 0-based
-    this._players = [,new Player(1), new Player(2)];
+    this._players = [,new Player(this), new Player(this)];
     this._currentPlayer = this._players[1];
   }
   get board() {
@@ -430,7 +430,7 @@ class RandomAI extends AI {
     // Fisher-Yates shuffle
     for (var i = 0; i < 9-1; i++) {
       var swap = this._state[i];
-      var randomIndex = _getRandomInt(i, 8);
+      var randomIndex = this._getRandomInt(i, 8);
       this._state[i] = this._state[randomIndex];
       this._state[randomIndex] = swap;
     }
