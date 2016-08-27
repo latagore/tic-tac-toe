@@ -330,12 +330,6 @@ class Player {
   isUsingO() {
     return this._usesO;
   }
-  set game(game) {
-    this._game = game;
-  }
-  get game() {
-    return this._game;
-  }
   set board(board) {
     this._board = board;
   }
