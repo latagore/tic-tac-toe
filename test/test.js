@@ -218,7 +218,7 @@ describe("Tic Tac Toe", function() {
   });
   
   describe("Random AIs", function() {
-    it.only("should be able to fill a board", function() {
+    it("should be able to fill a board", function() {
       var board = new app.Board();
       var player = new app.Player(board);
       player.useX();
