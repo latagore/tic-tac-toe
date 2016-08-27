@@ -239,6 +239,8 @@ class Judge {
 class Player {
   constructor(game) {
     this._game = game;
+    this._usesX = false;
+    this._usesO = false;
   }
   
   chooseBox(x, y){
@@ -249,28 +251,37 @@ class Player {
     // checks whether this player is the active one
     this._checkTurn();
           
-    if (Object.getPrototypeOf(this._boxValue) === XBoxState) {
+    if (this._usesX) {
       this._board.box(x, y).fillX();
-    } else if (Object.getPrototypeOf(this._boxValue) === OBoxState) {
+    } else if (this._usesO) {
       this._board.box(x, y).fillO();
     } else {
-      throw new Error("Unknown player box value");
+      throw new Error("Player box value not set");
     }
     this._game.nextTurn();
   }
   
   // throws Error if it's not this players turn
   _checkTurn(x, y){
-    if (this._game.getActivePlayer() !== this){
-      throw new Error("Not active player");
+    if (this._game.currentPlayer !== this){
+      throw new Error("Not current player's turn");
     }
   }
   
-  set boxValue(boxValue) {
-    this._boxValue = boxValue;
+  useX() {
+    this._usesX = true;
+    this._usesO = false;
   }
-  get boxValue() {
-    return this._boxValue;
+  
+  useO() {
+    this._usesX = false;
+    this._usesO = true;
+  }
+  isUsingX() {
+    return this._usesX;
+  }
+  isUsingO() {
+    return this._usesO;
   }
   set game(game) {
     this._game = game;
@@ -307,8 +318,13 @@ class Game {
     let p = undefined;
     this._players.forEach((el, i) => {
       if (
-        Object.getPrototypeOf(this._players[i].boxValue)
-        === Object.getPrototypeOf(boxValue)
+        boxValue instanceof XBoxState
+        && this._players[i].isUsingX()
+      ) {
+        p = this._players[i];
+      } else if (
+        boxValue instanceof OBoxState
+        && this._players[i].isUsingO()
       ) {
         p = this._players[i];
       }
@@ -370,7 +386,7 @@ class RandomAI extends AI {
     for (let i = 1; i <= 3; i++) {
       for (let j = 1; j <= 3; j++) {
         hasEmpty = hasEmpty || 
-          Object.getPrototypeOf(this._board.box(i, j).state) === EmptyBoxState;
+          this._board.box(i, j).state instanceof EmptyBoxState;
       }
     }
     // no more valid moves to make, so don't do anything

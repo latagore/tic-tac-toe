@@ -117,8 +117,8 @@ describe("Tic Tac Toe", function() {
       // BBB
       var game = new app.Game();
       // FIXME really weird that I have to create a new state + box
-      game.getPlayerByID(1).boxValue = new app.XBoxState(new app.Box(1,1));
-      game.getPlayerByID(2).boxValue = new app.OBoxState(new app.Box(1,1));
+      game.getPlayerByID(1).useX();
+      game.getPlayerByID(2).useO();
       var board = game.board;
       var judge = game.judge;
       var victor = undefined;
@@ -143,9 +143,8 @@ describe("Tic Tac Toe", function() {
       // BXB
       // BXB
       var game = new app.Game();
-      // FIXME really weird that I have to create a new state + box
-      game.getPlayerByID(1).boxValue = new app.XBoxState(new app.Box(1,1));
-      game.getPlayerByID(2).boxValue = new app.OBoxState(new app.Box(1,1));
+      game.getPlayerByID(1).useX();
+      game.getPlayerByID(2).useO();
       var board = game.board;
       var judge = game.judge;
       var victor = undefined;
@@ -171,8 +170,8 @@ describe("Tic Tac Toe", function() {
       // BBX
       var game = new app.Game();
       // FIXME really weird that I have to create a new state + box
-      game.getPlayerByID(1).boxValue = new app.XBoxState(new app.Box(1,1));
-      game.getPlayerByID(2).boxValue = new app.OBoxState(new app.Box(1,1));
+      game.getPlayerByID(1).useX();
+      game.getPlayerByID(2).useO();
       var board = game.board;
       var judge = game.judge;
       var victor = undefined;
@@ -197,8 +196,8 @@ describe("Tic Tac Toe", function() {
       // XBB
       var game = new app.Game();
       // FIXME really weird that I have to create a new state + box
-      game.getPlayerByID(1).boxValue = new app.XBoxState(new app.Box(1,1));
-      game.getPlayerByID(2).boxValue = new app.OBoxState(new app.Box(1,1));
+      game.getPlayerByID(1).useX();
+      game.getPlayerByID(2).useO();
       var board = game.board;
       var judge = game.judge;
       var victor = undefined;
@@ -222,7 +221,7 @@ describe("Tic Tac Toe", function() {
     it("should be able to fill a board", function() {
       var board = new app.Board();
       var player = new app.Player();
-      player.boxValue = new app.XBoxState(new app.Box(1,1));
+      player.useX();
       var ai = new app.RandomAI(board, player);
       for (var i = 0; i < 9; i++){
         ai.makeNextMove();
@@ -253,7 +252,7 @@ describe("Tic Tac Toe", function() {
       board.box(3,1).fillO();
       
       var player = new app.Player();
-      player.boxValue = new app.XBoxState(new app.Box(1,1));
+      player.useX();
       var ai = new app.RandomAI(board, player);
       // make 9 moves even though there's only 6 valid moves left
       for (var i = 0; i < 9; i++){
@@ -282,7 +281,7 @@ describe("Tic Tac Toe", function() {
       board1.box(1,3).fillX();
       
       var player = new app.Player();
-      player.boxValue = new app.XBoxState(new app.Box(1,1));
+      player.useX();
       var ai = new app.RandomAI(board1, player);
       // make 9 moves even though there's only 6 valid moves left
       for (var i = 0; i < 9; i++){
