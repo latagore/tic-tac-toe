@@ -237,8 +237,8 @@ class Judge {
 }
 
 class Player {
-  constructor(game) {
-    this._game = game;
+  constructor(board) {
+    this._board = board;
     this._usesX = false;
     this._usesO = false;
   }
@@ -326,7 +326,7 @@ class Game {
     this._board = new Board();
     this._judge = new Judge(this);
     // skip 0 because players are 1-based rather than 0-based
-    this._players = [,new Player(this), new Player(this)];
+    this._players = [,new Player(this._board), new Player(this._board)];
   }
   get board() {
     return this._board;
