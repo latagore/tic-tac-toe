@@ -333,6 +333,8 @@ class Game {
     // skip 0 because players are 1-based rather than 0-based
     this._players = [new Player(this._board),
         new Player(this._board)];
+    this._turnManager = new TurnManager();
+    this._turnManager.watch(this._players);
   }
   get board() {
     return this._board;
@@ -451,7 +453,7 @@ class RandomAI extends AI {
 
 class TurnManager {
   watch(players) {
-    if (this._players.length < 2) {
+    if (players.length < 2) {
       throw new Error("Must watch at least two players.");
     }
     this._players = players;
