@@ -321,6 +321,12 @@ class Player {
   get game() {
     return this._game;
   }
+  set board(board) {
+    this._board = board;
+  }
+  get board() {
+    return this._board;
+  }
 }
 
 class Game {
@@ -368,38 +374,25 @@ class AI {
   // generateSequence()
 }
 class RandomAI extends AI {
-  constructor(board, player){
+  constructor(){
     super();
-    if (!(board instanceof Board)) {
-      throw new TypeError("board must be a Board");
-    }
-    if (!(player instanceof Player)) {
-      throw new TypeError("player must be a Player");
-    }
-    this._board = board;
-    this._player = player;
+    this._state = [];
   }
   
-  watch(player) {
+  control(player) {
+    if (this._player != null){
+      throw new Error("Already controlling a player");
+    }
     this._player = player;
     player.subscribeTurnStarted(this.makeNextMove);
   }
-  unwatch() {
+  releaseControl() {
     this._player.unsubscribeTurnStarted(this.makeNextMove);
+    this._player = undefined;
   }
   
-  
-  get board(){
-    return this._board;
-  }
-  set board(board) {
-    this._board = board;
-  }
   get player(){
     return this._player;
-  }
-  set player(player){
-    this._player = player;
   }
   
   makeNextMove() {
@@ -408,7 +401,7 @@ class RandomAI extends AI {
     for (let i = 1; i <= 3; i++) {
       for (let j = 1; j <= 3; j++) {
         hasEmpty = hasEmpty || 
-          this._board.box(i, j).state instanceof EmptyBoxState;
+          this._player.board.box(i, j).state instanceof EmptyBoxState;
       }
     }
     // no more valid moves to make, so don't do anything
@@ -417,7 +410,7 @@ class RandomAI extends AI {
     }
     
     // if no more moves in the stack, regenerate the next moves
-    if (!this._state){
+    if (!this._state.length){
       this.generate();
     }
     // get some index from the permutation

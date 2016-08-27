@@ -222,7 +222,8 @@ describe("Tic Tac Toe", function() {
       var board = new app.Board();
       var player = new app.Player(board);
       player.useX();
-      var ai = new app.RandomAI(board, player);
+      var ai = new app.RandomAI();
+      ai.control(player);
       for (var i = 0; i < 9; i++){
         ai.makeNextMove();
       }
@@ -253,7 +254,8 @@ describe("Tic Tac Toe", function() {
       
       var player = new app.Player(board);
       player.useX();
-      var ai = new app.RandomAI(board, player);
+      var ai = new app.RandomAI();
+      ai.control(player);
       // make 9 moves even though there's only 6 valid moves left
       for (var i = 0; i < 9; i++){
         ai.makeNextMove();
@@ -280,9 +282,11 @@ describe("Tic Tac Toe", function() {
       board1.box(1,2).fillO();
       board1.box(1,3).fillX();
       
-      var player = new app.Player(board);
+      var player = new app.Player(board1);
       player.useX();
-      var ai = new app.RandomAI(board1, player);
+      var ai = new app.RandomAI();
+      ai.control(player);
+
       // make 9 moves even though there's only 6 valid moves left
       for (var i = 0; i < 9; i++){
         ai.makeNextMove();
@@ -301,7 +305,10 @@ describe("Tic Tac Toe", function() {
       
       // create second board
       var board2 = new app.Board();
-      ai.board = board2;
+      var player2 = new app.Player(board2);
+      player2.useX();
+      ai.releaseControl();
+      ai.control(player2);
       // make sure the AI can fill the entire board
       for (var i = 0; i < 9; i++){
         ai.makeNextMove();
