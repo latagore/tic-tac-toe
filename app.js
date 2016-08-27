@@ -34,10 +34,10 @@ class Box {
   }
   // x and y are increasing towards downright
   // so when x = y, it's on the downward diagonal
-  isOnDownwardDiagonal(){
+  isOnDownwardDiagonal() {
     return this.x === this.y;
   }
-  isOnUpwardDiagonal(){
+  isOnUpwardDiagonal() {
     return (4 - this.x) === this.y;
   }
   subscribeStateChanged(cb) {
@@ -63,21 +63,6 @@ class Box {
 }
 
 class BoxState {
-}
-class EmptyBoxState extends BoxState {
-  constructor(box) {
-    super();
-    if (box == null) {
-      throw new Error("box cannot be undefined");
-    }
-    this._box = box;
-  }
-  fillX() {
-    this._box.state = new XBoxState(this._box);
-  }
-  fillO() {
-    this._box.state = new OBoxState(this._box);
-  }
 }
 class XBoxState extends BoxState {
   constructor(box) {
@@ -107,6 +92,21 @@ class OBoxState extends BoxState {
   }
   fillO() {
     throw new Error("Box already filled");
+  }
+}
+class EmptyBoxState extends BoxState {
+  constructor(box) {
+    super();
+    if (box == null) {
+      throw new Error("box cannot be undefined");
+    }
+    this._box = box;
+  }
+  fillX() {
+    this._box.state = new XBoxState(this._box);
+  }
+  fillO() {
+    this._box.state = new OBoxState(this._box);
   }
 }
 
@@ -168,8 +168,8 @@ class Judge {
     let proto2 = Object.getPrototypeOf(b.box(2, row).state);
     let proto3 = Object.getPrototypeOf(b.box(3, row).state);
     if (
-        proto1 === proto2
-        && proto1 === proto3
+        proto1 === proto2 &&
+        proto1 === proto3
     ) {
       this._victor = this._game.getPlayerByBoxValue(b.box(1, row).state);
       this.notifyVictorChanged();
@@ -181,8 +181,8 @@ class Judge {
     let proto2 = Object.getPrototypeOf(b.box(col, 2).state);
     let proto3 = Object.getPrototypeOf(b.box(col, 3).state);
     if (
-        proto1 === proto2
-        && proto1 === proto3
+        proto1 === proto2 &&
+        proto1 === proto3
     ) {
       this._victor = this._game.getPlayerByBoxValue(b.box(col, 1).state);
       this.notifyVictorChanged();
@@ -194,8 +194,8 @@ class Judge {
     let proto2 = Object.getPrototypeOf(b.box(2, 2).state);
     let proto3 = Object.getPrototypeOf(b.box(3, 3).state);
     if (
-        proto1 === proto2
-        && proto1 === proto3
+        proto1 === proto2 &&
+        proto1 === proto3
     ) {
       this._victor = this._game.getPlayerByBoxValue(b.box(1, 1).state);
       this.notifyVictorChanged();
@@ -207,8 +207,8 @@ class Judge {
     let proto2 = Object.getPrototypeOf(b.box(2, 2).state);
     let proto3 = Object.getPrototypeOf(b.box(1, 3).state);
     if (
-        proto1 === proto2
-        && proto1 === proto3
+        proto1 === proto2 &&
+        proto1 === proto3
     ) {
       this._victor = this._game.getPlayerByBoxValue(b.box(3, 1).state);
       this.notifyVictorChanged();
@@ -222,9 +222,9 @@ class Judge {
   }
   unsubscribeVictorChanged(cb) {
     let array = this._victorChangedSubscribers;
-    for (var i = array.length-1; i >= 0; i--) {
-      if (array[i] === search_term) {
-          array.splice(i, 1);
+    for (var i = array.length - 1; i >= 0; i--) {
+      if (array[i] === cb) {
+        array.splice(i, 1);
       }
     }
     this._victorChangedSubscribers = array;
@@ -244,7 +244,6 @@ class Player {
     this._turnStartedSubscribers = [];
     this._turnEndedSubscribers = [];
   }
-  
   subscribeTurnStarted(cb) {
     if (typeof cb !== "function") {
       throw new Error("cb must be a Function object");
@@ -285,8 +284,8 @@ class Player {
       cb(this);
     });
   }
-  
-  chooseBox(x, y){
+
+  chooseBox(x, y) {
     if ((typeof x !== "number") || (typeof y !== "number")) {
       throw new TypeError("x and y must be a number");
     }
@@ -299,12 +298,10 @@ class Player {
     }
     this.notifyTurnEnded();
   }
-  
   useX() {
     this._usesX = true;
     this._usesO = false;
   }
-  
   useO() {
     this._usesX = false;
     this._usesO = true;
@@ -334,7 +331,8 @@ class Game {
     this._board = new Board();
     this._judge = new Judge(this);
     // skip 0 because players are 1-based rather than 0-based
-    this._players = [,new Player(this._board), new Player(this._board)];
+    this._players = [new Player(this._board),
+        new Player(this._board)];
   }
   get board() {
     return this._board;
@@ -348,20 +346,20 @@ class Game {
   set judge(judge) {
     this._judge = judge;
   }
-  getPlayerByID(id){
-    return this._players[id];
+  getPlayerByID(id) {
+    return this._players[id - 1];
   }
-  getPlayerByBoxValue(boxValue){
-    let p = undefined;
+  getPlayerByBoxValue(boxValue) {
+    let p;
     this._players.forEach((el, i) => {
       if (
-        boxValue instanceof XBoxState
-        && this._players[i].isUsingX()
+        boxValue instanceof XBoxState &&
+        this._players[i].isUsingX()
       ) {
         p = this._players[i];
       } else if (
-        boxValue instanceof OBoxState
-        && this._players[i].isUsingO()
+        boxValue instanceof OBoxState &&
+        this._players[i].isUsingO()
       ) {
         p = this._players[i];
       }
@@ -374,13 +372,13 @@ class AI {
   // generateSequence()
 }
 class RandomAI extends AI {
-  constructor(){
+  constructor() {
     super();
     this._state = [];
   }
-  
+
   control(player) {
-    if (this._player != null){
+    if (this._player != null) {
       throw new Error("Already controlling a player");
     }
     this._player = player;
@@ -390,27 +388,27 @@ class RandomAI extends AI {
     this._player.unsubscribeTurnStarted(this.makeNextMove);
     this._player = undefined;
   }
-  
-  get player(){
+
+  get player() {
     return this._player;
   }
-  
+
   makeNextMove() {
     // check that the board isn't completely filled
     let hasEmpty = false;
     for (let i = 1; i <= 3; i++) {
       for (let j = 1; j <= 3; j++) {
-        hasEmpty = hasEmpty || 
+        hasEmpty = hasEmpty ||
           this._player.board.box(i, j).state instanceof EmptyBoxState;
       }
     }
     // no more valid moves to make, so don't do anything
-    if (!hasEmpty){
+    if (!hasEmpty) {
       return;
     }
-    
+
     // if no more moves in the stack, regenerate the next moves
-    if (!this._state.length){
+    if (!this._state.length) {
       this.generate();
     }
     // get some index from the permutation
@@ -418,7 +416,7 @@ class RandomAI extends AI {
     // and convert it into a location on the board
     let x = Math.floor(i / 3) + 1;
     let y = i % 3 + 1;
-    
+
     try {
       this._player.chooseBox(x, y);
     } catch (e) {
@@ -430,20 +428,19 @@ class RandomAI extends AI {
       }
     }
   }
-  
+
   _getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
- 
   generate() {
     this._state = [];
     // initialize state
-    for (var i = 0; i < 9; i++) {
+    for (let i = 0; i < 9; i++) {
       this._state[i] = i;
     }
     // shuffle state into a random permutation using
     // Fisher-Yates shuffle
-    for (var i = 0; i < 9-1; i++) {
+    for (let i = 0; i < 9 - 1; i++) {
       var swap = this._state[i];
       var randomIndex = this._getRandomInt(i, 8);
       this._state[i] = this._state[randomIndex];
@@ -453,15 +450,14 @@ class RandomAI extends AI {
 }
 
 class TurnManager {
-  constructor() {
-  }
   watch(players) {
     if (this._players.length < 2) {
       throw new Error("Must watch at least two players.");
     }
     this._players = players;
-    players.forEach(player => 
-        { player.subscribeTurnEnded(this._pickNextPlayer); });
+    players.forEach(player => {
+      player.subscribeTurnEnded(this._pickNextPlayer);
+    });
   }
   _pickNextPlayer(currentPlayer) {
     let last = this._players.length - 1;
@@ -474,7 +470,6 @@ class TurnManager {
       }
     }
   }
-  
 }
 
 module.exports = {
@@ -488,4 +483,4 @@ module.exports = {
   Game,
   AI,
   RandomAI
-}
+};
