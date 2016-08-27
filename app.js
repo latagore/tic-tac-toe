@@ -243,14 +243,51 @@ class Player {
     this._usesO = false;
   }
   
+  subscribeTurnStarted(cb) {
+    if (typeof cb !== "function") {
+      throw new Error("cb must be a Function object");
+    }
+    this._turnStartedSubscribers.push(cb);
+  }
+  unsubscribeTurnStarted(cb) {
+    let array = this._turnStartedSubscribers;
+    for (var i = array.length - 1; i >= 0; i--) {
+      if (array[i] === cb) {
+        array.splice(i, 1);
+      }
+    }
+    this._turnStartedSubscribers = array;
+  }
+  notifyTurnStarted() {
+    this._turnStartedSubscribers.forEach(cb => {
+      cb(this);
+    });
+  }
+  subscribeTurnEnded(cb) {
+    if (typeof cb !== "function") {
+      throw new Error("cb must be a Function object");
+    }
+    this._turnEndedSubscribers.push(cb);
+  }
+  unsubscribeTurnEnded(cb) {
+    let array = this._turnEndedSubscribers;
+    for (var i = array.length - 1; i >= 0; i--) {
+      if (array[i] === cb) {
+        array.splice(i, 1);
+      }
+    }
+    this._turnEndedSubscribers = array;
+  }
+  notifyTurnEnded() {
+    this._turnEndedSubscribers.forEach(cb => {
+      cb(this);
+    });
+  }
+  
   chooseBox(x, y){
     if ((typeof x !== "number") || (typeof y !== "number")) {
       throw new TypeError("x and y must be a number");
     }
-    
-    // checks whether this player is the active one
-    this._checkTurn();
-          
     if (this._usesX) {
       this._board.box(x, y).fillX();
     } else if (this._usesO) {
@@ -259,13 +296,6 @@ class Player {
       throw new Error("Player box value not set");
     }
     this._game.nextTurn();
-  }
-  
-  // throws Error if it's not this players turn
-  _checkTurn(x, y){
-    if (this._game.currentPlayer !== this){
-      throw new Error("Not current player's turn");
-    }
   }
   
   useX() {
@@ -297,7 +327,6 @@ class Game {
     this._judge = new Judge(this);
     // skip 0 because players are 1-based rather than 0-based
     this._players = [,new Player(this), new Player(this)];
-    this._currentPlayer = this._players[1];
   }
   get board() {
     return this._board;
@@ -331,25 +360,6 @@ class Game {
     });
     return p;
   }
-  get currentPlayer() {
-    return this._currentPlayer;
-  }
-  set currentPlayer(playerID){
-    if (playerID !== 1 && playerID !== 2) {
-      throw new Error("PlayerID must be 1 or 2");
-    }
-    this._currentPlayer = players[playerID];
-  }
-  
-  nextTurn() {
-    if (this._currentPlayer === this._players[1]) {
-      this._currentPlayer = this._players[2];
-    } else if (this._currentPlayer === this._players[2]) {
-      this._currentPlayer = this._players[1];
-    } else {
-      throw new Error("No current player");
-    }
-  }
 }
 
 class AI {
@@ -367,6 +377,16 @@ class RandomAI extends AI {
     this._board = board;
     this._player = player;
   }
+  
+  watch(player) {
+    this._player = player;
+    player.subscribeTurnStarted(this.makeNextMove);
+  }
+  unwatch() {
+    this._player.unsubscribeTurnStarted(this.makeNextMove);
+  }
+  
+  
   get board(){
     return this._board;
   }
@@ -435,6 +455,31 @@ class RandomAI extends AI {
       this._state[randomIndex] = swap;
     }
   }
+}
+
+class TurnManager {
+  constructor() {
+  }
+  watch(players) {
+    if (this._players.length < 2) {
+      throw new Error("Must watch at least two players.");
+    }
+    this._players = players;
+    players.forEach(player => 
+        { player.subscribeTurnEnded(this._pickNextPlayer); });
+  }
+  _pickNextPlayer(currentPlayer) {
+    let last = this._players.length - 1;
+    if (this._players[last - 1] === currentPlayer) {
+      this._players[0].notifyTurnStarted();
+    }
+    for (let i = 0; i < this._players.length - 1; i++) {
+      if (this._players[i] === currentPlayer) {
+        this._players[i + 1].notifyTurnStarted();
+      }
+    }
+  }
+  
 }
 
 module.exports = {
