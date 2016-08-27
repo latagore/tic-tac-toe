@@ -241,6 +241,8 @@ class Player {
     this._board = board;
     this._usesX = false;
     this._usesO = false;
+    this._turnStartedSubscribers = [];
+    this._turnEndedSubscribers = [];
   }
   
   subscribeTurnStarted(cb) {
@@ -295,7 +297,7 @@ class Player {
     } else {
       throw new Error("Player box value not set");
     }
-    this._game.nextTurn();
+    this.notifyTurnEnded();
   }
   
   useX() {
@@ -421,8 +423,8 @@ class RandomAI extends AI {
     // get some index from the permutation
     let i = this._state.pop();
     // and convert it into a location on the board
-    let x = i / 3;
-    let y = i % 3;
+    let x = Math.floor(i / 3) + 1;
+    let y = i % 3 + 1;
     
     try {
       this._player.chooseBox(x, y);
@@ -444,7 +446,7 @@ class RandomAI extends AI {
     this._state = [];
     // initialize state
     for (var i = 0; i < 9; i++) {
-      this._state[i] = i+1;
+      this._state[i] = i;
     }
     // shuffle state into a random permutation using
     // Fisher-Yates shuffle
