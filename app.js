@@ -1,6 +1,12 @@
 
 class Box {
   constructor(x, y) {
+    if (typeof x !== "number") {
+      throw new TypeError("x must be a number");
+    }
+    if (typeof y !== "number") {
+      throw new TypeError("y must be a number");
+    }
     this._x = x;
     this._y = y;
     this._state = new EmptyBoxState(this);
@@ -10,18 +16,27 @@ class Box {
     return this._x;
   }
   set x(x) {
+    if (typeof x !== "number") {
+      throw new TypeError("x must be a number");
+    }
     this._x = x;
   }
   get y() {
     return this._y;
   }
   set y(y) {
+    if (typeof y !== "number") {
+      throw new TypeError("y must be a number");
+    }
     this._y = y;
   }
   get state() {
     return this._state;
   }
   set state(state) {
+    if (!state instanceof BoxState) {
+      throw new TypeError("y must be a number");
+    }
     this._state = state;
   }
   fillX() {
@@ -42,7 +57,7 @@ class Box {
   }
   subscribeStateChanged(cb) {
     if (typeof cb !== "function") {
-      throw new Error("cb must be a Function object");
+      throw new Error("cb must be a function");
     }
     this._stateChangedSubscribers.push(cb);
   }
@@ -67,8 +82,8 @@ class BoxState {
 class XBoxState extends BoxState {
   constructor(box) {
     super();
-    if (box == null) {
-      throw new Error("box cannot be undefined");
+    if (!box instanceof Box) {
+      throw new Error("box must be a Box object");
     }
     this._box = box;
   }
@@ -82,8 +97,8 @@ class XBoxState extends BoxState {
 class OBoxState extends BoxState {
   constructor(box) {
     super();
-    if (box == null) {
-      throw new Error("box cannot be undefined");
+    if (!box instanceof Box) {
+      throw new Error("box must be a Box object");
     }
     this._box = box;
   }
@@ -97,8 +112,8 @@ class OBoxState extends BoxState {
 class EmptyBoxState extends BoxState {
   constructor(box) {
     super();
-    if (box == null) {
-      throw new Error("box cannot be undefined");
+    if (!box instanceof Box) {
+      throw new Error("box must be a Box object");
     }
     this._box = box;
   }
@@ -142,6 +157,9 @@ class Judge {
     if (this._board != null) {
       throw new Error("Already watching a board");
     }
+    if (!board instanceof Board) {
+      throw new Error("board must be a Board object");
+    }
     this._board = board;
     for (var i = 1; i <= 3; i++) {
       for (var j = 1; j <= 3; j++) {
@@ -166,7 +184,7 @@ class Judge {
   // updates the victor status
   update(box) {
     if (!(box instanceof Box)) {
-      throw new Error("Argument must be a box.");
+      throw new Error("box must be a box.");
     }
     if (!(this.victor)) { // if victor is undefined means there is no victor yet
       if (box.isOnDownwardDiagonal()) {
@@ -238,6 +256,9 @@ class Judge {
     this._victorChangedSubscribers.push(cb);
   }
   unsubscribeVictorChanged(cb) {
+    if (typeof cb !== "function") {
+      throw new Error("cb must be a Function object");
+    }
     let array = this._victorChangedSubscribers;
     for (var i = array.length - 1; i >= 0; i--) {
       if (array[i] === cb) {
@@ -255,6 +276,9 @@ class Judge {
 
 class Player {
   constructor(board) {
+    if (!board instanceof Board) {
+      throw new Error("board must be a Board object");
+    }
     this._board = board;
     this._usesX = false;
     this._usesO = false;
@@ -268,6 +292,9 @@ class Player {
     this._turnStartedSubscribers.push(cb);
   }
   unsubscribeTurnStarted(cb) {
+    if (typeof cb !== "function") {
+      throw new Error("cb must be a Function object");
+    }
     let array = this._turnStartedSubscribers;
     for (var i = array.length - 1; i >= 0; i--) {
       if (array[i] === cb) {
@@ -288,6 +315,9 @@ class Player {
     this._turnEndedSubscribers.push(cb);
   }
   unsubscribeTurnEnded(cb) {
+    if (typeof cb !== "function") {
+      throw new Error("cb must be a Function object");
+    }
     let array = this._turnEndedSubscribers;
     for (var i = array.length - 1; i >= 0; i--) {
       if (array[i] === cb) {
@@ -339,9 +369,18 @@ class Player {
 
 class TurnManager {
   watch(players) {
+    if (!Array.isArray(players)) {
+      throw new Error("players must be an Array object");
+    }
     if (players.length < 2) {
       throw new Error("Must watch at least two players.");
     }
+    players.forEach(player => {
+      if (!player instanceof Player) {
+        throw new Error("player must be a Player object");
+      }
+    });
+    
     this._players = players;
     players.forEach(player => {
       player.subscribeTurnEnded(this._pickNextPlayer);
@@ -375,18 +414,30 @@ class Game {
     return this._board;
   }
   set board(board) {
+    if (!board instanceof Board) {
+      throw new Error("board must be a Board object");
+    }
     this._board = board;
   }
   get judge() {
     return this._judge;
   }
   set judge(judge) {
+    if (!judge instanceof Judge) {
+      throw new Error("judge must be a Judge object");
+    }
     this._judge = judge;
   }
   getPlayerByID(id) {
+    if (!typeof id === "number") {
+      throw new Error("id must be a number")
+    }
     return this._players[id - 1];
   }
   getPlayerByBoxValue(boxValue) {
+    if (!boxValue instanceof BoxState) {
+      throw new Error("boxValue must be a BoxState object");
+    }
     let p;
     this._players.forEach((el, i) => {
       if (
@@ -415,6 +466,9 @@ class RandomAI extends AI {
   }
 
   control(player) {
+    if (!player instanceof Player) {
+      throw new Error("player must be a Player object");
+    }
     if (this._player != null) {
       throw new Error("Already controlling a player");
     }
