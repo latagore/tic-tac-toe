@@ -337,6 +337,29 @@ class Player {
   }
 }
 
+class TurnManager {
+  watch(players) {
+    if (players.length < 2) {
+      throw new Error("Must watch at least two players.");
+    }
+    this._players = players;
+    players.forEach(player => {
+      player.subscribeTurnEnded(this._pickNextPlayer);
+    });
+  }
+  _pickNextPlayer(currentPlayer) {
+    let last = this._players.length - 1;
+    if (this._players[last - 1] === currentPlayer) {
+      this._players[0].notifyTurnStarted();
+    }
+    for (let i = 0; i < this._players.length - 1; i++) {
+      if (this._players[i] === currentPlayer) {
+        this._players[i + 1].notifyTurnStarted();
+      }
+    }
+  }
+}
+
 class Game {
   constructor() {
     this._board = new Board();
@@ -459,29 +482,6 @@ class RandomAI extends AI {
       var randomIndex = this._getRandomInt(i, 8);
       this._state[i] = this._state[randomIndex];
       this._state[randomIndex] = swap;
-    }
-  }
-}
-
-class TurnManager {
-  watch(players) {
-    if (players.length < 2) {
-      throw new Error("Must watch at least two players.");
-    }
-    this._players = players;
-    players.forEach(player => {
-      player.subscribeTurnEnded(this._pickNextPlayer);
-    });
-  }
-  _pickNextPlayer(currentPlayer) {
-    let last = this._players.length - 1;
-    if (this._players[last - 1] === currentPlayer) {
-      this._players[0].notifyTurnStarted();
-    }
-    for (let i = 0; i < this._players.length - 1; i++) {
-      if (this._players[i] === currentPlayer) {
-        this._players[i + 1].notifyTurnStarted();
-      }
     }
   }
 }
