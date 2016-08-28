@@ -127,9 +127,9 @@ class EmptyBoxState extends BoxState {
 
 class Board {
   constructor() {
-    let boxes = new Array(3); // boxes is a 3 by 3 grid
+    let boxes = [];
     for (let i = 1; i <= 3; i++) {
-      boxes[i] = new Array(3);
+      boxes[i] = [];
       for (let j = 1; j <= 3; j++) {
         let box = new Box(i, j);
         boxes[i][j] = box;
