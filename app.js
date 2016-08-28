@@ -494,6 +494,7 @@ module.exports = {
   Board,
   Judge,
   Player,
+  TurnManager,
   Game,
   AI,
   RandomAI
