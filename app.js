@@ -380,7 +380,7 @@ class TurnManager {
         throw new Error("player must be a Player object");
       }
     });
-    
+
     this._players = players;
     players.forEach(player => {
       player.subscribeTurnEnded(this._pickNextPlayer);
@@ -429,8 +429,8 @@ class Game {
     this._judge = judge;
   }
   getPlayerByID(id) {
-    if (!typeof id === "number") {
-      throw new Error("id must be a number")
+    if (typeof id !== "number") {
+      throw new Error("id must be a number");
     }
     return this._players[id - 1];
   }
